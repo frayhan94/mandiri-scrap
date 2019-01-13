@@ -16,7 +16,11 @@ const job = new CronJob({
                 console.log(`Start Scrapping Mandiri Internet Banking Mutation ${now}`);
                 /******************************LAUNCH MAIN PAGE********************/
                       // Start headless browser
-                const browser = await puppeteer.launch({headless: true});
+                /*const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']}); */
+                const browser = await puppeteer.launch({
+                    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                    executablePath: '/usr/bin/chromium-browser'
+                });
                 const page = await browser
                     .newPage()
                     .catch((e) => {
