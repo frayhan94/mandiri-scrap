@@ -6,6 +6,9 @@ const moment = require('moment');
 require('dotenv').config();
 const mutation = require('./models/mutation');
 const CronJob = require('cron').CronJob;
+const mandiriUsername = process.env.MANDIRI_USERNAME;
+const mandiripassword = process.env.MANDIRI_PASSWORD;
+const mandiriInternetUrl = process.env.MANDIRI_INTERNET_URL;
 const job = new CronJob({
     //runs every monday
     cronTime: '*/1 * * * *',
@@ -16,11 +19,16 @@ const job = new CronJob({
                 console.log(`Start Scrapping Mandiri Internet Banking Mutation ${now}`);
                 /******************************LAUNCH MAIN PAGE********************/
                       // Start headless browser
-                /*const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']}); */
-                const browser = await puppeteer.launch({
-                    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                    executablePath: '/usr/bin/chromium-browser'
-                });
+                let browserConfig ={
+                        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                        executablePath: '/usr/bin/chromium-browser'
+                    };
+                if(process.env.NODE_ENV === 'development') {
+                    browserConfig = {
+                        headless: true
+                    };
+                }
+                const browser = await puppeteer.launch(browserConfig);
                 const page = await browser
                     .newPage()
                     .catch((e) => {
@@ -28,7 +36,7 @@ const job = new CronJob({
                     });
                 // Go to main page
                 await page
-                    .goto('https://ibank.bankmandiri.co.id/retail3/', {waitUntil: 'networkidle2'})
+                    .goto(mandiriInternetUrl, {waitUntil: 'networkidle2'})
                     .catch((e) => {
                         console.log("Error opening page");
                         console.log(e);
@@ -58,7 +66,7 @@ const job = new CronJob({
                         console.log(e);
                     });
                 await userName
-                    .type("*****")
+                    .type(mandiriUsername)
                     .catch((e) => {
                         console.log("Error typing username");
                         console.log(e);
@@ -70,7 +78,7 @@ const job = new CronJob({
                         console.log(e);
                     });
                 await password
-                    .type("*****")
+                    .type(mandiripassword)
                     .catch((e) => {
                         console.log("Error typing password");
                         console.log(e);
@@ -151,22 +159,24 @@ const job = new CronJob({
                 });
 
                 const dataLength = data.length;
-                if (dataLength > 0) {
-                    await mutation.destroy({where: {}})
-                }
-                for (let i = 0; i <= dataLength; i++) {
+                for (let i = 0; i < dataLength; i++) {
                     if (i === 0 || (i % 4) === 0) {
-                        // Send to payment code service
-                        await mutation.create({
-                            date     : data[i],
-                            reference: data[i + 1],
-                            debit    : data[i + 2],
-                            credit   : data[i + 3]
-                        }).then(() => {
-                            console.log("Success save to Mandiri mutation")
-                        }).catch((e) => {
-                            console.log(e);
-                            console.log("Error save to Mandiri mutation")
+                        const reference = data[i + 1];
+                        mutation.findOne({ where: {reference: reference} }).then(async mutationData => {
+                            if(mutationData === null) {
+                                // Send to payment code service
+                                await mutation.create({
+                                    date     : data[i],
+                                    reference: reference,
+                                    debit    : data[i + 2],
+                                    credit   : data[i + 3]
+                                }).then(() => {
+                                    console.log("Success save to Mandiri mutation")
+                                }).catch((e) => {
+                                    console.log(e);
+                                    console.log("Error save to Mandiri mutation")
+                                });
+                            }
                         });
                     }
                 }
