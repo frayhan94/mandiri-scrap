@@ -10,22 +10,23 @@ const CronJob = require('cron').CronJob;
 const mandiriUsername = config.get('MANDIRI_USERNAME');
 const mandiripassword = config.get('MANDIRI_PASSWORD');
 const mandiriInternetUrl = config.get('MANDIRI_INTERNET_URL');
+const request = require('request-promise');
 const job = new CronJob({
     //runs every monday
     cronTime: '*/1 * * * *',
-    onTick  : function () {
+    onTick: function () {
         (async () => {
             try {
                 const now = moment().format("YYYY-MM-DD HH:mm:ss");
                 console.log(`Start Scrapping Mandiri Internet Banking Mutation ${now}`);
                 /******************************LAUNCH MAIN PAGE********************/
-                      // Start headless browser
-                let browserConfig ={
+                    // Start headless browser
+                let browserConfig = {
                         args: ['--no-sandbox', '--disable-setuid-sandbox'],
                         executablePath: '/usr/bin/chromium-browser'
                     };
 
-                if(config.get('NODE_ENV') === 'development') {
+                if (config.get('NODE_ENV') === 'development') {
                     browserConfig = {
                         headless: true
                     };
@@ -152,14 +153,44 @@ const job = new CronJob({
                 for (let i = 0; i < dataLength; i++) {
                     if (i === 0 || (i % 4) === 0) {
                         const reference = data[i + 1];
-                        mutation.findOne({ where: {reference: reference} }).then(async mutationData => {
-                            if(mutationData === null) {
+                        const credit = data[i + 3];
+                        mutation.findOne({
+                                where: {
+                                    reference: reference
+                                },
+                                order: [['id', 'DESC']]
+                            }
+                        ).then(async mutationData => {
+                            console.log("MD");
+                            console.log(mutationData);
+                            if (mutationData === null) {
+                                if (credit !== '-') {
+                                    const headerOptions = {
+                                        'Content-Type': 'application/json'
+                                    };
+                                    let creditNoComma = credit.replace(/,/g, '');
+                                    creditNoComma = parseFloat(creditNoComma);
+                                    let payload = {
+                                        "bankCode": "MANDIRI",
+                                        "nominal": creditNoComma,
+                                        "RefNo": reference
+                                    };
+                                    const requestConfig = {
+                                        method: 'POST',
+                                        uri: `${config.get('TOPUP_SERVICE')}unique-code/update-status-code`,
+                                        headers: headerOptions,
+                                        body: payload,
+                                        json: true
+                                    };
+                                    // Send to payment code service
+                                    await request(requestConfig);
+                                }
                                 // Send to payment code service
                                 await mutation.create({
-                                    date     : data[i],
+                                    date: data[i],
                                     reference: reference,
-                                    debit    : data[i + 2],
-                                    credit   : data[i + 3]
+                                    debit: data[i + 2],
+                                    credit: credit
                                 }).then(() => {
                                     console.log("Success save to Mandiri mutation")
                                 }).catch((e) => {
@@ -203,16 +234,15 @@ const job = new CronJob({
                 await page.screenshot({path: 'mandiri_after_logout.png'});
                 console.log('Successfully logout from Mandiri Internet Banking');
                 /***********************************************************/
-
-                await browser.close();
                 console.log('Done Scrapping Mandiri Mutation');
+                await browser.close();
             } catch (e) {
                 console.log("Inside error");
                 console.log(e);
             }
         })();
     },
-    start   : false,
+    start: false,
     timeZone: 'Asia/Jakarta'
 });
 job.start();
