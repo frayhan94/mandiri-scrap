@@ -42,16 +42,6 @@ const job = new CronJob({
                         console.log(e);
                     });
 
-                let bodyHTML = await page
-                    .evaluate(() => document.body.innerHTML)
-                    .catch((e) => {
-                        console.log("Error evaluating page");
-                        console.log(e);
-                    });
-
-                console.log("Before login page");
-                console.log(bodyHTML);
-
                 const mainFrame = page.frames().find(
                     frame => frame.name() === 'mainFrame'
                 );
@@ -105,9 +95,7 @@ const job = new CronJob({
                 await page.waitFor(7000);
 
                 /******************************TAKE SCREENSHOOT AFTER LOGIN PAGE************************/
-                let bodyHTMLAfter = await page.evaluate(() => document.body.innerHTML);
-                console.log("Successfully login");
-                console.log(bodyHTMLAfter);
+
                 await page.screenshot({path: 'mandiri_success_login.png'});
                 /*****************************************************************************/
 
