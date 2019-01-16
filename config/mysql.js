@@ -1,12 +1,14 @@
+const config = require('../config');
+
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize(
-    process.env.MYSQL_DATABASE,
-    process.env.MYSQL_USER,
-    process.env.MYSQL_PASSWORD,
+    config.get('DB_NAME'),
+    config.get('DB_USER'),
+    config.get('DB_PASS'),
     {
-        host            : process.env.MYSQL_HOST,
-        port            : process.env.MYSQL_PORT,
-        dialect         : 'mysql',
+        host            : config.get('DB_HOST'),
+        port            : config.get('DB_PORT'),
+        dialect         : config.get('DB_DIALECT'),
         logging         : false,
         operatorsAliases: Sequelize.Op,
         pool            : {

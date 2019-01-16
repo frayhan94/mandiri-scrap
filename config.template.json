@@ -1,0 +1,14 @@
+{
+  "PORT": "3000",
+  "DB_HOST": "__DB_HOST__",
+  "DB_PORT": "__DB_PORT__",
+  "DB_NAME": "__DB_NAME__",
+  "DB_USER": "__DB_USER__",
+  "DB_PASS": "__DB_PASS__",
+  "DB_DIALECT": "mysql",
+  "MANDIRI_USERNAME":"__MANDIRI_USERNAME__",
+  "MANDIRI_PASSWORD": "__MANDIRI_PASSWORD__",
+  "NODE_ENV": "__NODE_ENV__",
+  "MANDIRI_INTERNET_URL": "__MANDIRI_INTERNET_URL__",
+  "TOPUP_SERVICE": "__TOPUP_SERVICE__"
+}

@@ -2,13 +2,14 @@
 // Handling if no internet connection or 504
 
 const puppeteer = require('puppeteer');
+const config = require('./config');
 const moment = require('moment');
 require('dotenv').config();
 const mutation = require('./models/mutation');
 const CronJob = require('cron').CronJob;
-const mandiriUsername = process.env.MANDIRI_USERNAME;
-const mandiripassword = process.env.MANDIRI_PASSWORD;
-const mandiriInternetUrl = process.env.MANDIRI_INTERNET_URL;
+const mandiriUsername = config.get('MANDIRI_USERNAME');
+const mandiripassword = config.get('MANDIRI_PASSWORD');
+const mandiriInternetUrl = config.get('MANDIRI_INTERNET_URL');
 const job = new CronJob({
     //runs every monday
     cronTime: '*/1 * * * *',
@@ -23,7 +24,8 @@ const job = new CronJob({
                         args: ['--no-sandbox', '--disable-setuid-sandbox'],
                         executablePath: '/usr/bin/chromium-browser'
                     };
-                if(process.env.NODE_ENV === 'development') {
+
+                if(config.get('NODE_ENV') === 'development') {
                     browserConfig = {
                         headless: true
                     };
