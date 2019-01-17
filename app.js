@@ -161,8 +161,6 @@ const job = new CronJob({
                                 order: [['id', 'DESC']]
                             }
                         ).then(async mutationData => {
-                            console.log("MD");
-                            console.log(mutationData);
                             if (mutationData === null) {
                                 if (credit !== '-') {
                                     const headerOptions = {
