@@ -5,14 +5,4 @@ services:
       context: .
       dockerfile: ./Dockerfile
     image: mandiri-scrap
-    links:
-      - mysql
-  mysql:
-    image: mysql:5.7
-    ports:
-      - 13306:3306
-    environment:
-      MYSQL_DATABASE: mandiri_mutation
-      MYSQL_USER: app
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: password
+
