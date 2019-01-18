@@ -91,7 +91,7 @@ const job = new CronJob({
                         console.log(e);
                     });
 
-                await page.screenshot({path: 'mandiri_before_login.png'});
+                //await page.screenshot({path: 'mandiri_before_login.png'});
                 console.log("Successfully type username and password and hit login button");
                 /*****************************************************************************************/
 
@@ -99,7 +99,7 @@ const job = new CronJob({
 
                 /******************************TAKE SCREENSHOOT AFTER LOGIN PAGE************************/
 
-                await page.screenshot({path: 'mandiri_success_login.png'});
+                //await page.screenshot({path: 'mandiri_success_login.png'});
                 /*****************************************************************************/
 
                 await page.waitFor(10000);
@@ -139,7 +139,7 @@ const job = new CronJob({
                     });
 
                 await page.waitFor(10000);
-                await page.screenshot({path: 'mandiri_transaction_view.png'});
+                //await page.screenshot({path: 'mandiri_transaction_view.png'});
                 console.log("Successfully clicking link to see transaction history");
                 /****************************************************************************/
 
@@ -229,7 +229,7 @@ const job = new CronJob({
                     });
 
                 await page.waitFor(10000);
-                await page.screenshot({path: 'mandiri_after_logout.png'});
+                //await page.screenshot({path: 'mandiri_after_logout.png'});
                 console.log('Successfully logout from Mandiri Internet Banking');
                 /***********************************************************/
                 console.log('Done Scrapping Mandiri Mutation');
