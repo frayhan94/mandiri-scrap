@@ -7,6 +7,7 @@ const mandiriUsername = config.get('MANDIRI_USERNAME');
 const mandiripassword = config.get('MANDIRI_PASSWORD');
 const mandiriInternetUrl = config.get('MANDIRI_INTERNET_URL');
 const request = require('request-promise');
+const logger = require('../utils/logger');
 const scrapping = async () => {
     try {
         const now = moment().format("YYYY-MM-DD HH:mm:ss");
@@ -226,9 +227,11 @@ const scrapping = async () => {
         //await page.screenshot({path: 'mandiri_after_logout.png'});
         await console.log('Successfully logout from Mandiri Internet Banking');
         /***********************************************************/
+        logger.info(`Successfully Scrap Mandiri Internet Banking Mutation ${now}`);
         await console.log('Done Scrapping Mandiri Mutation');
         await browser.close();
     } catch (e) {
+        logger.info(`Something error with scrapping Mandiri internet banking mutation ${e}`);
         console.log("Inside error");
         console.log(e);
     }
