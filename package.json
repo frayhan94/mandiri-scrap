@@ -15,8 +15,8 @@
     "request-promise": "^4.2.2",
     "sequelize": "^4.42.0",
     "sequelize-cli": "^5.4.0",
-    "winston": "^3.1.0",
-    "winston-daily-rotate-file": "^3.5.1",
+    "winston": "^2.4.4",
+    "winston-daily-rotate-file": "^3.1.4",
     "nconf": "^0.10.0"
   },
   "devDependencies": {
